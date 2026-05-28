@@ -10,4 +10,4 @@ test('Login test', async ({page}) => {
     await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
 await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 
-});
+});""
