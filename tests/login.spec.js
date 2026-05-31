@@ -1,13 +1,41 @@
-const {test, expect} = require('@playwright/test'); 
-test('Login test', async ({page}) => {
-    await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-    await page.setDefaultTimeout(5000);
-    await page.getByRole('textbox', { name: 'Username' }).click(); 
-    await page.getByRole('textbox', { name: 'Username' }).fill('Admin');
-    await page.getByRole('textbox', { name: 'Password' }).click(); 
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin123');
-    await page.getByRole('button', { name: 'Login' }).click();
-    await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
-await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+const { test, expect } = require('@playwright/test');
+const LoginPage = require('../pages/LoginPage');
 
-});""
+test.describe('OrangeHRM Login - Page Object Model', () => {
+  let loginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+  });
+
+  test('should login successfully with valid credentials', async () => {
+    await loginPage.login('Admin', 'admin123');
+    const isDashboardVisible = await loginPage.verifyDashboard();
+    expect(isDashboardVisible).toBe(true);
+  });
+
+  test('should display login form on page load', async () => {
+    const isLoginPageDisplayed = await loginPage.isLoginPageDisplayed();
+    expect(isLoginPageDisplayed).toBe(true);
+  });
+
+  test('should fill username field correctly', async ({ page }) => {
+    const testUsername = 'TestUser';
+    await loginPage.enterUsername(testUsername);
+    const inputValue = await page.getByRole('textbox', { name: 'Username' }).inputValue();
+    expect(inputValue).toBe(testUsername);
+  });
+
+  test('should fill password field correctly', async ({ page }) => {
+    const testPassword = 'TestPassword123';
+    await loginPage.enterPassword(testPassword);
+    const inputValue = await page.getByRole('textbox', { name: 'Password' }).inputValue();
+    expect(inputValue).toBe(testPassword);
+  });
+
+  test('should display page title', async () => {
+    const pageTitle = await loginPage.getPageTitle();
+    expect(pageTitle).toContain('OrangeHRM');
+  });
+});
