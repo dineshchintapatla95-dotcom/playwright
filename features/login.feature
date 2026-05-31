@@ -1,13 +1,13 @@
-Feature: User Login
-  As a user
-  I want to log in to the OrangeHRM application
-  So that I can access the system
+Feature: OrangeHRM Login Page
+  As an OrangeHRM user
+  I want to log in to the application
+  So that I can access the dashboard
 
   Scenario: Successful login with valid credentials
     Given user navigates to login page
     When user enters username "Admin"
     And user enters password "admin123"
-    And user clicks login button
+    And user clicks login
     Then user should see dashboard
     And user should see "Performance" link
 

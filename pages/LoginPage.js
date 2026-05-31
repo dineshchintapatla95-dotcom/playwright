@@ -2,78 +2,65 @@ class LoginPage {
   constructor(page) {
     this.page = page;
 
-    // Selectors
-    this.usernameField = page.getByRole('textbox', { name: 'Username' });
-    this.passwordField = page.getByRole('textbox', { name: 'Password' });
-    this.loginButton = page.getByRole('button', { name: 'Login' });
+    this.usernameField = page.locator('input[name="username"]');
+    this.passwordField = page.locator('input[name="password"]');
+    this.loginButton = page.locator('button[type="submit"]');
     this.errorMessage = page.locator('[role="alert"]');
-    this.dashboardHeading = page.getByRole('heading', { name: /Dashboard/i });
+    this.dashboardHeading = page.locator('h6', { hasText: 'Dashboard' });
   }
 
   /**
-   * Navigate to the OrangeHRM login page
-   * @param {string} url - The login page URL
+   * Navigate to the OrangeHRM login page.
+   * @param {string} url - The login page URL.
    */
   async navigateToLoginPage(url) {
-    await this.page.goto(url);
-    await this.page.waitForLoadState('networkidle');
+    await this.page.goto(url, { waitUntil: 'networkidle' });
+    await this.usernameField.waitFor({ state: 'visible', timeout: 10000 });
   }
 
   /**
-   * Enter username in the username field
-   * @param {string} username - Username to enter
+   * Enter username in the login form.
+   * @param {string} username
    */
   async enterUsername(username) {
-    await this.usernameField.click();
     await this.usernameField.fill(username);
   }
 
   /**
-   * Enter password in the password field
-   * @param {string} password - Password to enter
+   * Enter password in the login form.
+   * @param {string} password
    */
   async enterPassword(password) {
-    await this.passwordField.click();
     await this.passwordField.fill(password);
   }
 
   /**
-   * Click the login button
+   * Click login and wait for the dashboard to appear.
    */
   async clickLogin() {
-    await this.loginButton.click();
-    await this.page.waitForLoadState('networkidle');
+    await Promise.all([
+      this.page.waitForLoadState('networkidle'),
+      this.loginButton.click()
+    ]);
   }
 
   /**
-   * Get error message if login fails
-   * @returns {Promise<string|null>} Error message text or null if not visible
-   */
-  async getErrorMessage() {
-    const isVisible = await this.errorMessage.isVisible({ timeout: 5000 }).catch(() => false);
-    if (isVisible) {
-      return await this.errorMessage.textContent();
-    }
-    return null;
-  }
-
-  /**
-   * Verify if dashboard is loaded
-   * @returns {Promise<boolean>} True if dashboard is visible
+   * Verify that dashboard is visible after login.
+   * @returns {Promise<boolean>}
    */
   async verifyDashboard() {
     try {
       await this.dashboardHeading.waitFor({ state: 'visible', timeout: 10000 });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
 
   /**
-   * Perform complete login flow
-   * @param {string} username - Username
-   * @param {string} password - Password
+   * Perform the full login flow.
+   * @param {string} username
+   * @param {string} password
    */
   async login(username, password) {
     await this.enterUsername(username);
@@ -82,21 +69,21 @@ class LoginPage {
   }
 
   /**
-   * Check if login page is displayed
-   * @returns {Promise<boolean>} True if login form is visible
+   * Check if login page is displayed.
+   * @returns {Promise<boolean>}
    */
   async isLoginPageDisplayed() {
     try {
       await this.usernameField.waitFor({ state: 'visible', timeout: 5000 });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
 
   /**
-   * Get the page title
-   * @returns {Promise<string>} Page title
+   * Get the current page title.
+   * @returns {Promise<string>}
    */
   async getPageTitle() {
     return await this.page.title();

@@ -22,7 +22,7 @@ When('user enters password {string}', async function(password) {
   await loginPage.enterPassword(password);
 });
 
-When('user clicks login button', async function() {
+When('user clicks login', async function() {
   await loginPage.clickLogin();
 });
 
