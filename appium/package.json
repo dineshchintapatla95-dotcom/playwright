@@ -1,0 +1,17 @@
+{
+  "name": "appium-mobile-tests",
+  "version": "1.0.0",
+  "description": "Mobile app testing with Appium and WebdriverIO",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "test:android": "jest --testNamePattern='Android'",
+    "test:ios": "jest --testNamePattern='iOS'"
+  },
+  "keywords": ["appium", "mobile", "testing"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "webdriverio": "^8.14.0"
+  }
+}
